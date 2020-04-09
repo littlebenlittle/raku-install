@@ -11,7 +11,7 @@
 
 `Install` is a leightweight tool for extracting modules from [META6](https://github.com/jonathanstowe/META6)-compliant projects into a `Rakudo` environment. The META6 attribute that `Install` cares about is `provides`.
 
-They keys in the `provides` attribute are used as targets, while the value is interpreted as the path relative to `META6.json`.
+The keys in the `provides` attribute are used as targets, while the value is interpreted as the path relative to `META6.json`.
 
 Example:
 
