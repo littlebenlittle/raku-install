@@ -1,0 +1,19 @@
+{
+  "meta-version": "0",
+  "name": "Install",
+  "version": "0.0.0",
+  "auth": "github:littlebenlittle",
+  "description": "simple META6 package installer",
+  "source-url": "git://github.com/littlebenlittle/raku-install",
+  "perl": "6.d",
+  "author": "Ben Little <ben.little@fruition.net>",
+  "tags": [
+    "install",
+    "meta6",
+    "package"
+  ],
+  "license": "Artistic-2.0",
+  "provides": {
+    "Install": "lib/Install.rakumod"
+  }
+}
