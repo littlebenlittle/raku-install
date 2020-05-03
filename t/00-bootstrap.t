@@ -15,12 +15,13 @@ subtest 'works without META6 package' => {
         "Test::Thing" => "lib/some/thing",
         "Hello2" => "lib/world",
     );
+    my @deps = [ "Test::Thing", "Hello2" ];
     my $meta6-file = "$temp-dir/META6.json".IO;
-    my $json-string = Rakudo::Internals::JSON.to-json((
+    my $json-string = Rakudo::Internals::JSON.to-json(%(
         provides => %provides,
+        depends  => @deps,
     ));
-    $json-string ~~ rx:r/ '[' $<meta6>=(<-[ \] ]>+) ']' /;
-    $meta6-file.spurt($/<meta6>.Str);
+    $meta6-file.spurt($json-string);
     my $repo = $meta6-file.parent.path;
     my %modules = Install::extract-provided-modules($repo);
     is-deeply %modules, %provides, 'can extract module names and paths from META6.json';
