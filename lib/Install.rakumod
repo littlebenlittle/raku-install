@@ -56,3 +56,54 @@ our sub extract-provided-modules(IO() $repo) {
     return $meta6.provides.list;
 }
 
+our sub extract-dependencies(IO() $repo) {
+    my $meta6-path = join-path($repo, 'META6.json');
+    die "No META6.json found in $repo" unless $meta6-path.IO.f;
+    try require ::('META6');
+    if ::('META6') ~~ Failure {
+        my %config = from-json($meta6-path.IO.slurp);
+        return %config<depends>.list;
+    }
+    my $meta6 = ::('META6').new($meta6-path);
+    return $meta6.depends.list;
+}
+
+our sub parse-package-directory-file(IO() $file) {
+    my $kvs = $file.slurp;
+    return ::('KV')::parse($kvs) if try require ::('KV');
+    grammar KV {
+        token raw-val {
+            [
+            | <.alnum>
+            | [ ":" | "/" | "-" | "@" | "." ]
+            ]+
+        }
+        token val {
+            | <raw-val>
+            | "'" <raw-val> "'"
+            | '"' <raw-val> '"'
+        }
+        token key { <.alpha> [<.alnum> | "-" | ":" ]* }
+        token sep { "=" }
+        token del { <.ws> }
+        token kv-pair { <key> <sep> <val> }
+        token TOP {
+            <.ws>
+            <kv-pair>+ %% <del>
+            <.ws>
+        }
+    }
+    class Actions {
+        method TOP ($/) {
+            make %($/<kv-pair>.map: *.made);
+        }
+        method kv-pair ($/) {
+            make $/<key>.Str => $/<val><raw-val>.Str;
+        }
+    }
+    KV.parse($kvs, :actions(Actions));
+    my $obj = $/.made;
+    die "could not parse $kvs" unless $obj;
+    return %($obj);
+}
+
