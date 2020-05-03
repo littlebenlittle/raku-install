@@ -107,3 +107,9 @@ our sub parse-package-directory-file(IO() $file) {
     return %($obj);
 }
 
+our sub get-dependency-urls(IO() $repo, IO() $package-directory-file -->Hash:D) {
+    my @deps = extract-dependencies($repo);
+    my $packages = parse-package-directory-file($package-directory-file);
+    return %($_ => $packages{$_} for @deps);
+}
+
