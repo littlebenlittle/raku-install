@@ -10,7 +10,7 @@ plan 1;
 subtest 'works without META6 package' => {
     INIT  my $temp-dir = get-temp-dir('install-wo-META6');
     LEAVE rm-temp-dir($temp-dir);
-    plan 1;
+    plan 2;
     my %provides = (
         "Test::Thing" => "lib/some/thing",
         "Hello2" => "lib/world",
@@ -25,6 +25,8 @@ subtest 'works without META6 package' => {
     my $repo = $meta6-file.parent.path;
     my %modules = Install::extract-provided-modules($repo);
     is-deeply %modules, %provides, 'can extract module names and paths from META6.json';
+    my @meta6-deps = Install::extract-dependencies($meta6-file.parent);
+    is-deeply @meta6-deps, @deps, 'can extract dependencies from META6.json';
 }
 
 done-testing();
